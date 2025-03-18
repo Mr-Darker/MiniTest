@@ -51,18 +51,68 @@ TEST_F(MyTestFixture, TestWithSetup) {
 
 // ======================================================
 // 参数化测试
-std::vector<std::vector<std::string>> paramData = {
-    {"2", "3", "5"},
-    {"4", "1", "5"},
-    {"6", "3", "8"}
+std::vector<std::tuple<int, int, int>> additionParams = {
+    {1, 2, 3},
+    {4, 5, 9},
+    {3, 7, 10},
+    {6, -2, 4},
+    {8, 3, 12}
 };
 
-TEST_P(TestParamAddition, paramData) {
-    int a = std::stoi(params[0]);
-    int b = std::stoi(params[1]);
-    int expected = std::stoi(params[2]);
+// 参数化测试
+TEST_P(TestParamsAddition, additionParams, int a, int b, int expected) {
     ASSERT_EQ(a + b, expected);
 }
+
+std::vector<std::tuple<std::string, std::string, std::string>> stringParams = {
+    {"Hello", "World", "HelloWorld"},
+    {"Mini", "Test", "MiniTest"},
+    {"Unit", "Test", "UnitTest"}
+};
+
+// 参数化测试
+TEST_P(TestStringConcat, stringParams, const std::string& s1, const std::string& s2, const std::string& expected) {
+    ASSERT_EQ(s1 + s2, expected);
+}
+
+std::vector<std::tuple<int, int>> exceptionParams = {
+    {10, 0},
+    {-4, 2}
+};
+
+TEST_P(TestExceptionHandling, exceptionParams, int a, int b) {
+    if (b == 0) {
+        ASSERT_THROW(throw std::runtime_error("Divide by zero"), std::runtime_error);
+    } else if (a < 0) {
+        ASSERT_THROW(throw std::domain_error("Negative square root"), std::domain_error);
+    }
+}
+
+std::vector<std::tuple<int, int, int>> boundaryParams = {
+    {INT_MAX, 1, INT_MIN}, // 溢出
+    {INT_MIN, -1, INT_MAX},
+    {0, 0, 0},
+    {-1, -1, -2}
+};
+
+TEST_P(TestBoundaryCases, boundaryParams, int a, int b, int expected) {
+    ASSERT_EQ(a + b, expected);
+}
+
+std::vector<std::tuple<int>> perfParams = {
+    {1000},
+    {5000},
+    {10000}
+};
+
+// TEST_P(TestPerformanceLoop, perfParams, int count) {
+//     BENCHMARK_P(TestLoopBenchmark, 5, count) {
+//         int sum = 0;
+//         for (int i = 0; i < count; ++i) {
+//             sum += i;
+//         }
+//     };
+// }
 // ======================================================
 
 // ======================================================
@@ -94,6 +144,23 @@ BENCHMARK(TestLoopPerformance, 10) {
         sum += i;
     }
 }
+
+// 无参数函数性能测试
+void MyTestFunction() {
+    std::vector<int> data(100000);
+    std::ranges::generate(data.begin(), data.end(), rand);
+    std::ranges::sort(data.begin(), data.end());
+}
+
+BENCHMARK_FUNC(MyTestFunction, 5);
+
+// 有参数函数性能测试
+int MyTestAdd(const int a, const int b) {
+    return a + b;
+}
+
+BENCHMARK_FUNC(MyTestAdd, 10, 10, 20);
+
 // ======================================================
 // 模拟对象
 // Mock 方法
