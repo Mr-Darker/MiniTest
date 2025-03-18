@@ -7,9 +7,9 @@
 
 // ======================================================
 // 基础测试
-TEST(TestAddition) {
-    ASSERT_EQ(2 + 3, 5);
-}
+// TEST(TestAddition) {
+//     ASSERT_EQ(2 + 3, 5);
+// }
 
 TEST(TestBoolean) {
     ASSERT_TRUE(true);
@@ -127,6 +127,16 @@ TEST_SUITE(MathTests, TestMultiplication) {
 
 TEST_SUITE(StringTests, TestStringLength) {
     ASSERT_EQ(std::string("hello").size(), 5);
+}
+
+struct MySuiteTestFixture {
+    MySuiteTestFixture() { std::cout << "[SETUP] MyTestFixture\n"; }
+    ~MySuiteTestFixture() { std::cout << "[TEARDOWN] MyTestFixture\n"; }
+};
+
+// 测试代码
+TEST_SUITE_F(MySuiteTestFixture, MathTests, TestAddition) {
+    ASSERT_EQ(1 + 1, 2);
 }
 // ======================================================
 
